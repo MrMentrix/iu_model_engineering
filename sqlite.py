@@ -15,6 +15,7 @@ for path in all_paths: # looping through all the .csv files
     df["date"] = pd.to_datetime(df["Date/Time"]).dt.date # extract the date from the "Date/Time" column
     df["time"] = pd.to_datetime(df["Date/Time"]).dt.time # extract the time from the "Date/Time column"
     df.drop('Date/Time', axis=1, inplace=True) # drop the "Date/Time" column as it now only as redundant information and is no longer needed
+    df.drop("Base", axis=1, inplace=True) # Only repeats one value and is not needed
 
     df.rename(columns={"Lon": "long", "Lat": "lat", "Base": "base"}, inplace=True) # rename some columns to fit the overall lowercase naming
 

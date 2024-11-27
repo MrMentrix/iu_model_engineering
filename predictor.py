@@ -2,32 +2,36 @@ import sqlite3
 import numpy as np
 import pandas as pd
 
+def get_top(max_clusters=10):
+    conn = sqlite3.connect("data.db")
 
-conn = sqlite3.connect("data.db")
+    df = pd.read_sql(f"SELECT * FROM data WHERE date BETWEEN '2014-09-01' AND '2014-09-08'", conn)
+    df["time"] = pd.to_datetime(df["time"])
+    df["hour"] = df["time"].dt.hour
+    df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d") # to allow later .max() - .min() calculation
 
-df = pd.read_sql("SELECT * FROM data", conn)
-df["time"] = pd.to_datetime(df["time"])
-df["hour"] = df["time"].dt.hour
-df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d")
+    cluster_counts = dict(df["cluster"].value_counts().sort_index())
+    cluster_counts = dict(sorted(cluster_counts.items(), key=lambda x: x[1]))
 
-cluster_counts = dict(df['cluster'].value_counts().sort_index())
-cluster_counts = dict(sorted(cluster_counts.items()))
+    i = 0
+    total_tops = {}
 
-MAX_CLUSTERS = 1
+    while i < max_clusters and i < df["cluster"].nunique():
 
-i = 0
+        average_per_hour = {}
 
-while i < MAX_CLUSTERS and i < df["cluster"].nunique():
+        subset = df[df["cluster"] == i]
 
-    average_per_hour = {}
+        date_diff = subset["date"].max() - subset["date"].min()
+        for j in range(23):
+            hour_set = subset[subset["hour"] == j]
+            average_per_hour[j] = len(hour_set) / date_diff.days
 
-    subset = df[df["cluster"] == i]
+        total_tops[list(cluster_counts.keys())[i]] = average_per_hour
+        i += 1
+    
+    return total_tops
 
-    date_diff = subset["date"].max() - subset["date"].min()
-    for i in range(23):
-        hour_set = subset[subset["hour"] == i]
-        average_per_hour[i] = len(hour_set) / date_diff.days
+total = get_top(3)
 
-
-    print(f"Cluster {i} averages: {average_per_hour}\n")
-    i += 1
+print(total)

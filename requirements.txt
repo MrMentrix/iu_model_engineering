@@ -11,6 +11,7 @@ cupshelpers==1.0
 dbus-python==1.3.2
 defer==1.0.6
 distro==1.9.0
+greenlet==3.1.1
 httplib2==0.20.4
 idna==3.6
 importlib-metadata==4.12.0
@@ -52,7 +53,9 @@ SecretStorage==3.3.3
 sessioninstaller==0.0.0
 setuptools==68.1.2
 six==1.16.0
+SQLAlchemy==2.0.36
 systemd-python==235
+typing_extensions==4.12.2
 ubuntu-drivers-common==0.0.0
 ufw==0.36.2
 urllib3==2.0.7
